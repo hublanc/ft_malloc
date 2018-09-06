@@ -6,19 +6,19 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/05 16:36:35 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/06 18:13:49 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/09/06 18:28:14 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_malloc.h"
 
-void	init_block_list_value(e_memory_type, size_t size, t_block_metadata *blocks)
+void	init_block_list_value(size_t size, t_block_metadata *blocks)
 {
 	blocks->size	= size;
 	blocks->magic	= 0;
 	blocks->is_free	= 1;
 	blocks->next	= NULL;
-	return (void);
+	return ;
 }
 
 void	init_area_value(e_memory_type memory_type, size_t size, t_area * area)
@@ -35,32 +35,32 @@ void	init_area_value(e_memory_type memory_type, size_t size, t_area * area)
 	{
 		area->size = size;
 	}
-	init_block_list_value(memory_type, area->size, area->block_list);
+	init_block_list_value(area->size, area->block_list);
 	area->next = NULL;
-	return (void);
+	return ;
 }
 
 void	create_new_area(e_memory_type memory_type, size_t size, t_area *area)
 {
-	if (TINY == e_memory_type)
+	if (TINY == memory_type)
 	{
 		area = (t_area*)mmap(NULL, getpagesize() * TINY_REGION_SIZE,
 							PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		init_area_value(memory_type, size, area);
 	}
-	else if (SMALL == e_memory_type)
+	else if (SMALL == memory_type)
 	{
 		area = (t_area*)mmap(NULL, getpagesize() * SMALL_REGION_SIZE,
 							PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		init_area_value(memory_type, size, area);
 	}
-	else if (LARGE == e_memory_type)
+	else if (LARGE == memory_type)
 	{
 		area = (t_area*)mmap(NULL, size,
 							PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 		init_area_value(memory_type, size, area);
 	}
-	return (void);
+	return ;
 }
 
 t_block_metadata *find_free_block(size_t size, t_area *area)
@@ -68,9 +68,9 @@ t_block_metadata *find_free_block(size_t size, t_area *area)
 	t_block_metadata	*current;
 
 	current = area->block_list;
-	while (current && !(current->is_free && current->size => size))
+	while (current && !(current->is_free && (current->size >= size)))
 	{
-		current = list->next;
+		current = current->next;
 	}
 	return (current);
 }
@@ -90,7 +90,7 @@ void	*carve_memory_bock(e_memory_type memory_type, size_t size, t_area *area)
 	size_t				tmp;
 
 	tmp = block->size;
-	block = find_free_block(size, allocator.area);
+	block = find_free_block(size, area);
 	block->size = size;
 	block->is_free = 0;
 	if (TINY == memory_type)
@@ -131,7 +131,7 @@ void	*allocate_memory(e_memory_type memory_type, size_t size)
 	else if (TINY == memory_type || SMALL == memory_type)
 	{
 		if (NULL == allocator.area)
-			create_new_area(memory_type, allocator.area, size);
+			create_new_area(memory_type, size, allocator.area);
 		memory_allocated = carve_memory_block(memory_type, size, allocator.area);
 	}
 	return (memory_allocated);

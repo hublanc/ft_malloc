@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/04 13:57:56 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/06 18:15:02 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/09/06 18:26:59 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # define SMALL_REGION_SIZE		4096
 # define SMALL_ALLOC_RESOLUTION 512
 
-# define round_up(nb, padding) (((num) + ((padding) - 1)) & ~((padding) - 1))
+# define round_up(nb, padding) (((nb) + ((padding) - 1)) & ~((padding) - 1))
 
 typedef struct					s_allocator
 {
@@ -73,9 +73,7 @@ typedef enum
 */
 void*	malloc(size_t size);
 
-void	allocate_memory(e_memory_type memory_type, size_t size);
 
-void	find_free_space(list *current);
 
 
 /*
