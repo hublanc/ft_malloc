@@ -6,41 +6,130 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/05 16:36:35 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/05 17:56:33 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/09/06 17:26:37 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_malloc.h"
+#include "../includes/ft_malloc.h"
 
-void	create_new_area(e_memory_type memory_type, s_area area)
+void	init_block_list_value(e_memory_type, size_t size, t_block_metadata *blocks)
 {
+	blocks->size	= size;
+	blocks->magic	= 0;
+	blocks->is_free	= 1;
+	blocks->next	= NULL;
+	return (void);
 }
 
-void	allocate_memory(e_memory_type memory_type, size_t size)
+void	init_area_value(e_memory_type memory_type, size_t size, t_area * area)
 {
-	s_area area = g_area_list[memory_type];
-	if (!area.addr)
+	if (TINY == memory_type)
 	{
-		create_new_area(memory_type);
+		area->size = getpagesize() * TINY_REGION_SIZE;
 	}
+	else if (SMALL == memory_type)
+	{
+		area->size = getpagesize() * SMALL_REGION_SIZE;
+	}
+	else if (LARGE == memory_type)
+	{
+		area->size = size;
+	}
+	init_block_list_value(memory_type, area->size, area->block_list);
+	area->next = NULL;
+	return (void);
+}
+
+void	create_new_area(e_memory_type memory_type, size_t size, t_area *area)
+{
+	if (TINY == e_memory_type)
+	{
+		area = (t_area*)mmap(NULL, getpagesize() * TINY_REGION_SIZE,
+							PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		init_area_value(memory_type, size, area);
+	}
+	else if (SMALL == e_memory_type)
+	{
+		area = (t_area*)mmap(NULL, getpagesize() * SMALL_REGION_SIZE,
+							PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		init_area_value(memory_type, size, area);
+	}
+	else if (LARGE == e_memory_type)
+	{
+		area = (t_area*)mmap(NULL, size,
+							PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+		init_area_value(memory_type, size, area);
+	}
+	return (void);
+}
+
+t_block_metadata *find_free_block(e_memory_type memory_type, size_t size, t_area *area)
+{
+	t_block_metadata	*current;
+
+	current = area->block_list;
+	while (current && !(current->is_free && current->size => size))
+	{
+		current = list->next;
+	}
+	return (current);
+}
+
+t_area	*find_free_area(t_area *current)
+{
+	while (NULL != current)
+	{
+		current = current->next;
+	}
+	return (current);
+}
+
+void	*allocate_memory_large(size_t size)
+{
+	t_area		*area_allocated;
+
+	area_allocated = find_free_area(g_allocator[LARGE].area);
+	create_new_area(LARGE, size, area_allocated);
+	return ((void*)area_allocated + 1);
+}
+
+void	*allocate_memory(e_memory_type memory_type, size_t size)
+{
+	t_allocator allocator;
+	void		*memory_allocated;
+
+	allocator = g_allocator[memory_type];
+	if (LARGE == memory_type)
+	{
+		memory_allocated = allocate_memory_large(size);
+	}
+	else if (TINY == memory_type || SMALL == memory_type)
+	{
+		if (NULL == allocator.area)
+			create_new_area(memory_type, allocator.area, size);
+		find_free_block(memory_type, size, allocator.area);
+	}
+	return (memory_allocated);
 }
 
 void	*malloc(size_t size){
+	void	*memory_allocated;
+
 	if (size <= 0)
 	{
 		return (NULL);
 	}
 	if (size <= TINY_MAX_ALLOC_SIZE)
 	{
-		allocate_memory(TINY, size);
+		memory_allocated = allocate_memory(TINY, size);
 	}
 	else if (size <= SMALL_MAX_ALLOC_SIZE)
 	{
-		allocate_memory(SMALL, size);
+		memory_allocated = allocate_memory(SMALL, size);
 	}
 	else
 	{
-		allocate_memory(LARGE, size);
+		memory_allocated = allocate_memory(LARGE, size);
 	}
-	return ();
+	return (memory_allocated);
 }
