@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/04 13:57:56 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/06 17:26:42 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/09/06 18:15:02 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # define SMALL_MAX_ALLOC_SIZE	129024
 # define SMALL_REGION_SIZE		4096
 # define SMALL_ALLOC_RESOLUTION 512
+
+# define round_up(nb, padding) (((num) + ((padding) - 1)) & ~((padding) - 1))
 
 typedef struct					s_allocator
 {
