@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../includes/ft_malloc.h"
-#include <stdio.h>
 
 t_allocator g_allocator[3] = {{0, NULL}, {0, NULL}, {0, NULL}};
 
@@ -27,6 +26,7 @@ void	init_block_metadata_value(t_area *area)
 			block_metadata->size = area->size;
 			block_metadata->magic = 0;
 			block_metadata->is_free = 1;
+
 			block_metadata->next = NULL;
 		}
 	}
@@ -58,7 +58,6 @@ t_area	*create_new_area(e_memory_type memory_type, size_t size)
 						PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
 	init_area_value(mmap_size, new_area);
 	init_block_metadata_value(new_area);
-	printf("NEW AREA ADDRESS: %p\n",(void*)&new_area);
 	return (new_area);
 }
 
@@ -87,11 +86,14 @@ t_area	*find_free_area(t_area *current)
 	return (current);
 }
 
+#include <stdio.h>
+
 t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area *area)
 {
 	t_area				*area_allocated;
 	t_block_metadata	*block_metadata;
 
+	printf("IN FIRST BLOCK NEW AREA\n");
 	area_allocated = find_free_area(area);
 	area_allocated = create_new_area(memory_type, size);
 	block_metadata = (t_block_metadata*)(area_allocated + 1);
@@ -167,12 +169,16 @@ void	*ft_malloc(size_t size){
 	return (memory_allocated);
 }
 
+/*
+void *malloc(size_t size) {
+	return (ft_malloc(size));
+}
+
+
 #include <stdio.h>
 
-int main(int argc, const char *argv[])
+void basic_test()
 {
-	(void)argc;
-	(void)argv;
 	char *str = (char*)ft_malloc(sizeof(char) * 8);
 	char *str1 = (char*)ft_malloc(sizeof(char) * 120000);
 	char *str2 = (char*)ft_malloc(sizeof(char) * 210000);
@@ -209,5 +215,14 @@ int main(int argc, const char *argv[])
 		printf("Str after strcpy: %s \n", str2);
 		printf("%p\n",(void*)&str2);
 	}
+}
+
+int main(int argc, const char *argv[])
+{
+	(void)argc;
+	(void)argv;
+	basic_test();
+
 	return 0;
 }
+*/

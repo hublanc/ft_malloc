@@ -41,8 +41,8 @@ typedef struct		s_area
 typedef struct				s_block_metadata
 {
 	size_t					size;
-	int						magic;
 	int						is_free;
+	int						magic;
 	struct s_block_metadata	*next;
 }							t_block_metadata;
 
@@ -71,7 +71,18 @@ typedef enum
 **	Return:
 **			- return a pointer of the new memory area allocated
 */
-void*	ft_malloc(size_t size);
+//void*	malloc(size_t size);
+
+//SUB_FUNC
+void	*ft_malloc(size_t size);
+void	*allocate_memory(e_memory_type memory_type, size_t size);
+t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size, t_area *area);
+t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area *area);
+t_area	*find_free_area(t_area *current);
+t_block_metadata *find_free_block(size_t size, t_area *area);
+t_area	*create_new_area(e_memory_type memory_type, size_t size);
+void	init_area_value(size_t size, t_area *area);
+void	init_block_metadata_value(t_area *area);
 
 
 
@@ -84,7 +95,7 @@ void*	ft_malloc(size_t size);
 **	Input:
 **			- ptr : pointer to free his allaction
 */
-void	ft_free(void *ptr);
+void	free(void *ptr);
 
 extern t_allocator g_allocator[3];
 
