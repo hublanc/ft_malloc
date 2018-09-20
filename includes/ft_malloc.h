@@ -46,6 +46,18 @@ typedef struct				s_block_metadata
 	struct s_block_metadata	*next;
 }							t_block_metadata;
 
+typedef struct				s_area_to_free
+{
+	t_area					*prev;
+	t_area					*area;
+}							t_area_to_free;
+
+typedef struct				s_block_to_free
+{
+	t_block_metadata		*prev;
+	t_block_metadata		*block;
+}							t_block_to_free;
+
 typedef enum
 {
 	TINY,
