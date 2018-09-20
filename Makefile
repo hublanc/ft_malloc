@@ -6,7 +6,7 @@
 #    By: hublanc <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/24 15:04:09 by hublanc           #+#    #+#              #
-#    Updated: 2018/09/12 18:26:43 by hublanc          ###   ########.fr        #
+#    Updated: 2018/09/20 15:20:41 by hublanc          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ HEADER  = includes/
 LIBSRC  = libft/
 SRCDIR  = srcs/
 OBJDIR	= objs/
-SRC		= ft_malloc.c
+SRC		= ft_malloc.c ft_free.c
 SRCS	= $(addprefix $(SRCDIR), $(SRC))
 OBJS	= $(addprefix $(OBJDIR), $(SRC:.c=.o))
 
@@ -38,7 +38,7 @@ all: $(OBJDIR) $(NAME)
 
 $(NAME): $(LIB) $(OBJS)
 	$(CC) $(FLAGS) -L./$(LIBSRC) -shared -o $(NAME) $(OBJS)
-	$(CC) $(FLAGS) -L./$(LIBSRC) -o Malloc $(OBJS)
+	#$(CC) $(FLAGS) -L./$(LIBSRC) -o Malloc $(OBJS)
 	@echo "\n${CYN}PROCESSING DONE !${NC}"
 
 $(OBJDIR):

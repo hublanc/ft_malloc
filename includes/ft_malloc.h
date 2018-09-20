@@ -71,13 +71,13 @@ typedef enum
 **	Return:
 **			- return a pointer of the new memory area allocated
 */
-//void*	malloc(size_t size);
+void*	malloc(size_t size);
 
 //SUB_FUNC
 void	*ft_malloc(size_t size);
 void	*allocate_memory(e_memory_type memory_type, size_t size);
-t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size, t_area *area);
-t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area *area);
+t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size, t_area **area);
+t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area **area);
 t_area	*find_free_area(t_area *current);
 t_block_metadata *find_free_block(size_t size, t_area *area);
 t_area	*create_new_area(e_memory_type memory_type, size_t size);
@@ -95,6 +95,9 @@ void	init_block_metadata_value(t_area *area);
 **	Input:
 **			- ptr : pointer to free his allaction
 */
+t_area *find_area_where_block_to_free(void *ptr);
+t_block_metadata *find_block_to_free(void *ptr);
+void 	ft_free(void *ptr);
 void	free(void *ptr);
 
 extern t_allocator g_allocator[3];

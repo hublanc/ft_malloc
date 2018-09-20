@@ -67,10 +67,10 @@ Test(createArea, simple_LARGE)
         block = (t_block_metadata*)(area + 1);
         //printf("New LARGE area created with a size of %zu\n", index);
         cr_assert(area);
-        cr_assert(area->size == index);
+        cr_assert(area->size == (index + sizeof(t_block_metadata) + sizeof(t_area)));
         cr_assert(area->next == NULL);
         cr_assert(block);
-        cr_assert(block->size = area->size);
+        cr_assert(block->size == (area->size - sizeof(t_area) - sizeof(t_block_metadata)));
         cr_assert(block->is_free == 1);
         cr_assert(block->next == NULL);
         index += 10000;
@@ -79,7 +79,7 @@ Test(createArea, simple_LARGE)
 
 Test(CarveMemoryBlock, simple)
 {
-    /*
+
     t_area              *area_TINY;
     t_area              *area_SMALL;
     t_block_metadata    *block;
@@ -90,17 +90,14 @@ Test(CarveMemoryBlock, simple)
     area_SMALL = NULL;
     index = 100;
     limit = TINY_REGION_SIZE * getpagesize();
-    printf("DEBUT LOOP\n");
+    //printf("DEBUT LOOP\n");
     while (index < TINY_MAX_ALLOC_SIZE)
     {
-        printf("IN LOOP WITH INDEX %zu\n", index);
+        //printf("IN LOOP WITH INDEX %zu\n", index);
         size_t arrondi = round_up(sizeof(t_block_metadata) + index, TINY_ALLOC_RESOLUTION);
-        printf("ARRONDI: %zu\n", arrondi);
-        block = carve_memory_block(TINY, index, area_TINY);
-        if (index >= 2097000)
-        {
-            printf("BLOCK STAT\n\tSIZE: %zu\n\tFREE: %d\n\tNEXT: %p\n\nBLOCK NEXT STAT\n\tSIZE: %zu\n\tFREE: %d\n\tNEXT: %p\n", block->size, block->is_free, block->next, block->next->size, block->next->is_free, block->next->next);
-        }
+        //printf("ARRONDI: %zu\n", arrondi);
+        block = carve_memory_block(TINY, index, &area_TINY);
+        //printf("BLOCK STAT\n\tSIZE: %zu\n\tFREE: %d\n\tNEXT: %p\n\nBLOCK NEXT STAT\n\tSIZE: %zu\n\tFREE: %d\n\tNEXT: %p\n", block->size, block->is_free, block->next, block->next->size, block->next->is_free, block->next->next);
         //cr_assert(block);
         //cr_assert(block->size == index);
         //cr_assert(block->is_free == 0);
@@ -112,11 +109,11 @@ Test(CarveMemoryBlock, simple)
     int i = 1;
     while (area_TINY)
     {
-        printf("NB AREA %d\n", i);
+        //printf("NB AREA %d\n", i);
         area_TINY = area_TINY->next;
     }
-    printf("FIN LOOP\n");
-
+    //printf("FIN LOOP\n");
+    /*
     block = carve_memory_block(TINY, 300, area_TINY);
     cr_assert(block);
     cr_assert(block->size == 300);
@@ -147,6 +144,22 @@ Test(FtMalloc, someTiny)
     char *str = (char*)ft_malloc(8);
     char *str1 = (char*)ft_malloc(8);
     char *str2 = (char*)ft_malloc(8);
+    cr_assert(str);
+    cr_assert(str1);
+    cr_assert(str2);
+}
+
+Test(FtFree, someTiny)
+{
+    char *str = (char*)ft_malloc(8);
+    char *str1 = (char*)ft_malloc(15);
+    char *str2 = (char*)ft_malloc(20);
+    cr_assert(str);
+    cr_assert(str1);
+    cr_assert(str2);
+    ft_free(str);
+    ft_free(str1);
+    ft_free(str2);
     cr_assert(str);
     cr_assert(str1);
     cr_assert(str2);
