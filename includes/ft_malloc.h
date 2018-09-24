@@ -26,6 +26,13 @@
 
 # define round_up(nb, padding) (((nb) + ((padding) - 1)) & ~((padding) - 1))
 
+typedef enum
+{
+	TINY,
+	SMALL,
+	LARGE
+}					e_memory_type;
+
 typedef struct		s_allocator
 {
 	size_t			size_allocated;
@@ -58,12 +65,11 @@ typedef struct				s_block_to_free
 	t_block_metadata		*block;
 }							t_block_to_free;
 
-typedef enum
+typedef struct				s_area_type
 {
-	TINY,
-	SMALL,
-	LARGE
-}					e_memory_type;
+	e_memory_type			memory_type;
+	t_area					*area;
+}							t_area_type;
 
 # define METADATA_SIZE sizeof(struct s_block_metadata_data)
 
@@ -107,10 +113,34 @@ void	init_block_metadata_value(t_area *area);
 **	Input:
 **			- ptr : pointer to free his allaction
 */
-t_area *find_area_where_block_to_free(void *ptr);
-t_block_metadata *find_block_to_free(void *ptr);
+t_area_to_free find_area_where_block_to_free(void *ptr);
+t_block_to_free find_block_to_free(void *ptr, t_area *area);
 void 	ft_free(void *ptr);
 void	free(void *ptr);
+
+
+
+
+/*
+**	SHOW ALLOCATION MEMORY
+**
+**	void show_alloc_mem();
+**
+**	Input:
+**			none
+**
+**	This function print current memory allocation
+**	Ex:
+**	TINY : 0xA0000
+**	0xA0020 - 0xA004A : 42 octets
+**	0xA006A - 0xA00BE : 84 octets
+**	SMALL : 0xAD000
+**	0xAD020 - 0xADEAD : 3725 octets
+**	LARGE : 0xB0000
+**	0xB0020 - 0xBBEEF : 48847 octets
+**	Total : 52698 octets
+*/
+void show_alloc_mem();
 
 extern t_allocator g_allocator[3];
 

@@ -83,7 +83,7 @@ void free_large(t_area_to_free area_to_free) {
     if (!area_to_free.prev)
         area_to_free.area = area_to_free.area->next;
     else
-        area_to_free.prev->next = area_to_free.area->area;
+        area_to_free.prev->next = area_to_free.area->next;
     munmap(area_to_free.area, area_to_free.area->size);
 }
 
@@ -114,15 +114,18 @@ void free_empty_area(t_block_to_free block_to_free, t_area_to_free area_to_free)
 
 void free_small_tiny(t_block_to_free block_to_free, t_area_to_free area_to_free)
 {
+    int pad;
+
+    pad = 0;
     if (block_to_free.block)
     {
         if (block_to_free.block->size <= TINY_MAX_ALLOC_SIZE)
             pad = round_up(sizeof(t_block_metadata) + block_to_free.block->size, TINY_ALLOC_RESOLUTION);
-        else if (block->size <= SMALL_MAX_ALLOC_SIZE)
+        else if (block_to_free.block->size <= SMALL_MAX_ALLOC_SIZE)
             pad = round_up(sizeof(t_block_metadata) + block_to_free.block->size, SMALL_ALLOC_RESOLUTION);
         block_to_free.block->is_free = 1;
-        block_to_free.block->size += (pad - block_to_free.block->size - sizeof(block_metadata));
-        defrag(block_to_free, memory_type);
+        block_to_free.block->size += (pad - block_to_free.block->size - sizeof(t_block_metadata));
+        defrag(block_to_free);
         free_empty_area(block_to_free, area_to_free);
     }
 }
@@ -135,6 +138,7 @@ void ft_free(void *ptr)
     if (NULL != ptr)
     {
         area_to_free = find_area_where_block_to_free(ptr);
+        //FIX THE IF BELOW
         if (area_to_free.area
             && (area_to_free.area->size > getpagesize() * SMALL_REGION_SIZE))
             free_large(area_to_free);

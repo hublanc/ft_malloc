@@ -164,3 +164,8 @@ Test(FtFree, someTiny)
     cr_assert(str1);
     cr_assert(str2);
 }
+
+Test(ShowAllocMem, printTest)
+{
+    show_alloc_mem();
+}
