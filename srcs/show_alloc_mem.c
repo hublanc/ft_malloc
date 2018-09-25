@@ -72,8 +72,8 @@ void print_area(t_area_type area_type)
     ft_putchar('\n');
     while (block)
     {
-        //if (!block->is_free)
-        print_block(block);
+        if (!block->is_free)
+            print_block(block);
         block = block->next;
     }
 }
@@ -90,7 +90,7 @@ t_area_type get_smallest_addr(t_area **tiny, t_area **small, t_area **large)
         tmp = small;
         smallest.memory_type = SMALL;
     }
-    if ((*large) && ((*large < smallest.area) || (!*tmp)))
+    if ((*large) && ((*large < *tmp) || (!*tmp)))
     {
         tmp = large;
         smallest.memory_type = LARGE;
@@ -122,11 +122,6 @@ void show_alloc_mem()
     t_area      *large_area;
     t_area_type current;
 
-    char *str = (char*)ft_malloc(8);
-    char *str1 = (char*)ft_malloc(110);
-    char *str2 = (char*)ft_malloc(1000);
-    char *str3 = (char*)ft_malloc(200000);
-    char *str4 = (char*)ft_malloc(400000);
     tiny_area = g_allocator[TINY].area;
     small_area = g_allocator[SMALL].area;
     large_area = g_allocator[LARGE].area;

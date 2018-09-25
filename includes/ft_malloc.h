@@ -15,6 +15,7 @@
 
 # include <unistd.h>
 # include <sys/mman.h>
+# include <sys/resource.h>
 # include "../libft/includes/libft.h"
 
 # define TINY_MAX_ALLOC_SIZE 992

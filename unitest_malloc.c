@@ -2,7 +2,7 @@
 #include "./includes/ft_malloc.h"
 #include <stdio.h>
 
-Test(createArea, simple_TINY)
+Test(createArea, simple_TINY, .disabled = true)
 {
     t_area              *area;
     t_block_metadata    *block;
@@ -27,7 +27,7 @@ Test(createArea, simple_TINY)
     }
 }
 
-Test(createArea, simple_SMALL)
+Test(createArea, simple_SMALL, .disabled = true)
 {
     t_area              *area;
     t_block_metadata    *block;
@@ -52,7 +52,7 @@ Test(createArea, simple_SMALL)
     }
 }
 
-Test(createArea, simple_LARGE)
+Test(createArea, simple_LARGE, .disabled = true)
 {
     t_area              *area;
     t_block_metadata    *block;
@@ -77,7 +77,7 @@ Test(createArea, simple_LARGE)
     }
 }
 
-Test(CarveMemoryBlock, simple)
+Test(CarveMemoryBlock, simple, .disabled = true)
 {
 
     t_area              *area_TINY;
@@ -139,7 +139,7 @@ Test(CarveMemoryBlock, simple)
     */
 }
 
-Test(FtMalloc, someTiny)
+Test(FtMalloc, someTiny, .disabled = true)
 {
     char *str = (char*)ft_malloc(8);
     char *str1 = (char*)ft_malloc(8);
@@ -149,7 +149,7 @@ Test(FtMalloc, someTiny)
     cr_assert(str2);
 }
 
-Test(FtFree, someTiny)
+Test(FtFree, someTiny, .disabled = true)
 {
     char *str = (char*)ft_malloc(8);
     char *str1 = (char*)ft_malloc(15);
@@ -165,7 +165,46 @@ Test(FtFree, someTiny)
     cr_assert(str2);
 }
 
-Test(ShowAllocMem, printTest)
+Test(FtMalloc, rLimit, .disabled = true)
 {
+    struct rlimit rlp;
+
+    rlp.rlim_cur = 40000;
+    rlp.rlim_max = 50000;
+    if (!setrlimit(RLIMIT_MEMLOCK, &rlp))
+    {
+        char *str = (char*)ft_malloc(8);
+        show_alloc_mem();
+    }
+    else
+        printf("Setrlimit returned an error\n");
+}
+
+Test(FtFree, badFree, .disabled = false)
+{
+    ft_free(NULL);
+    char *str = (char*)ft_malloc(15);
+    cr_assert(str);
+    ft_free(str);
+    int i = 0;
+    while (i < 1000000)
+    {
+        str = (char*)ft_malloc(i);
+        //ft_free(str);
+        if (i >= 45327)
+            show_alloc_mem();
+        i++;
+    }
+    show_alloc_mem();
+}
+
+Test(ShowAllocMem, printTest, .disabled = true)
+{
+    ft_malloc(8);
+    ft_malloc(100);
+    ft_malloc(1000);
+    ft_malloc(2000);
+    ft_malloc(200000);
+    ft_malloc(400000);
     show_alloc_mem();
 }
