@@ -180,21 +180,36 @@ Test(FtMalloc, rLimit, .disabled = true)
         printf("Setrlimit returned an error\n");
 }
 
-Test(FtFree, badFree, .disabled = false)
+Test(FtFree, badFree, .disabled = true)
 {
     ft_free(NULL);
     char *str = (char*)ft_malloc(15);
     cr_assert(str);
     ft_free(str);
     int i = 0;
-    while (i < 1000000)
+    while (i < 100000)
     {
         str = (char*)ft_malloc(i);
-        //ft_free(str);
-        if (i >= 45327)
-            show_alloc_mem();
-        i++;
+        ft_free(str);
+        i += 100;
     }
+    show_alloc_mem();
+}
+
+Test(FtFree, freeSmall, .disabled = false)
+{
+    char *str;
+    int i = 500;
+    while (i < 100000)
+    {
+        str = (char*)ft_malloc(i);
+        ft_free(str);
+        printf("%d\n", i);
+        if (i >= 98000)
+            show_alloc_mem();
+        i += 100;
+    }
+    printf("WTF\n");
     show_alloc_mem();
 }
 

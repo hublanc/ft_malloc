@@ -18,6 +18,9 @@
 # include <sys/resource.h>
 # include "../libft/includes/libft.h"
 
+#include <stdio.h>
+
+# define TINY_MIN_ALLOC_SIZE 16
 # define TINY_MAX_ALLOC_SIZE 992
 # define TINY_REGION_SIZE 512
 # define TINY_ALLOC_RESOLUTION 16
@@ -48,16 +51,18 @@ typedef struct		s_area
 
 typedef struct				s_block_metadata
 {
-	size_t					size;
 	int						is_free;
-	int						magic;
+	int						fill[2];
 	struct s_block_metadata	*next;
+	size_t					size;
+
 }							t_block_metadata;
 
 typedef struct				s_area_to_free
 {
 	t_area					*prev;
 	t_area					*area;
+	e_memory_type			memory_type;
 }							t_area_to_free;
 
 typedef struct				s_block_to_free
@@ -98,7 +103,7 @@ void	*allocate_memory(e_memory_type memory_type, size_t size);
 t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size, t_area **area);
 t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area **area);
 t_area	*find_free_area(t_area *current);
-t_block_metadata *find_free_block(size_t size, t_area *area);
+t_block_metadata *find_free_block(size_t size, e_memory_type memory_type, t_area *area);
 t_area	*create_new_area(e_memory_type memory_type, size_t size);
 void	init_area_value(size_t size, t_area *area);
 void	init_block_metadata_value(t_area *area);

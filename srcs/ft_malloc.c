@@ -24,7 +24,6 @@ void	init_block_metadata_value(t_area *area)
 		if (NULL != block_metadata)
 		{
 			block_metadata->size = area->size - sizeof(t_area) - sizeof(t_block_metadata);
-			block_metadata->magic = 0;
 			block_metadata->is_free = 1;
 			block_metadata->next = NULL;
 		}
@@ -106,7 +105,23 @@ t_area	*create_new_area(e_memory_type memory_type, size_t size)
 	return (new_area);
 }
 
-t_block_metadata *find_free_block(size_t size, t_area *area)
+int check_size_free_block(size_t size, e_memory_type memory_type,t_block_metadata *block)
+{
+	int is_valid;
+	size_t min_type;
+
+	is_valid = 0;
+	if (TINY == memory_type)
+		min_type = TINY_MIN_ALLOC_SIZE;
+	else if (SMALL == memory_type)
+		min_type = TINY_MAX_ALLOC_SIZE + 1;
+	if ((block->size >= size + sizeof(t_block_metadata) + min_type)
+		|| block->size == size)
+		is_valid = 1;
+	return (is_valid);
+}
+
+t_block_metadata *find_free_block(size_t size, e_memory_type memory_type, t_area *area)
 {
 	t_block_metadata	*current;
 	int					is_found;
@@ -118,7 +133,9 @@ t_block_metadata *find_free_block(size_t size, t_area *area)
 		current = (t_block_metadata*)(area + 1);
 		while (current && !is_found)
 		{
-			if (current->is_free && (current->size >= size))
+			//if (current->is_free && (current->size >= size))
+			if (current->is_free
+				&& check_size_free_block(size, memory_type, current))
 				is_found = 1;
 			else
 				current = current->next;
@@ -157,28 +174,60 @@ t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t
 	return (block_metadata);
 }
 
+void set_block_value(e_memory_type memory_type, size_t size, t_block_metadata *block)
+{
+	size_t	tmp;
+	size_t	pad;
+	t_block_metadata *next;
+
+	tmp = block->size;
+	block->size = size;
+	block->is_free = 0;
+	next = NULL;
+	printf("TMP SIZE: %zu : BLOCK SIZE: %zu	\n", tmp, block->size);
+	if (TINY == memory_type)
+		pad = round_up(sizeof(t_block_metadata) + size, TINY_ALLOC_RESOLUTION);
+	else if (SMALL == memory_type)
+		pad = round_up(sizeof(t_block_metadata) + size, SMALL_ALLOC_RESOLUTION);
+	if (tmp > pad + sizeof(t_block_metadata))
+	{
+		if (!block->next)
+		{
+			printf("TRY TO MALLOC BEFORE NULL BLOCK\n");
+			block->next = (t_block_metadata*)((char*)block + pad);
+			block->next->size = tmp - pad;
+			block->next->is_free = 1;
+			block->next->next = NULL;
+		}
+		else
+		{
+			printf("TRY TO MALLOC BETWEEN ALLOCATED BLOCK\n");
+			next = block->next;
+			block->next = (t_block_metadata*)((char*)block + pad);
+			block->next->size = tmp - pad;
+			block->next->is_free = 1;
+			block->next->next = next;
+			if (block->next->next == block->next)
+				printf("NEXT DIDN$T WORK\n");
+		}
+	}
+	else
+	{
+		printf("TRY TO MALLOC AT THE END OF THE AREA\n");
+		block->next = NULL;
+	}
+}
+
 t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size, t_area **area)
 {
 	t_block_metadata	*block;
-	size_t				tmp;
-	size_t				pad;
 
-	block = find_free_block(size, *area);
+	block = find_free_block(size, memory_type, *area);
 	if (!block)
 		block = first_block_new_area(memory_type, size, area);
 	if (block)
 	{
-		tmp = block->size;
-		block->size = size;
-		block->is_free = 0;
-		if (TINY == memory_type)
-			pad = round_up(sizeof(t_block_metadata) + size, TINY_ALLOC_RESOLUTION);
-		else if (SMALL == memory_type)
-			pad = round_up(sizeof(t_block_metadata) + size, SMALL_ALLOC_RESOLUTION);
-		block->next = (t_block_metadata*)((char*)block + pad);
-		block->next->size = tmp - pad;
-		block->next->is_free = 1;
-		block->next->next = NULL;
+		set_block_value(memory_type, size, block);
 	}
 	return (block);
 }

@@ -49,7 +49,7 @@ void print_addr(void *addr)
 
 void print_block(t_block_metadata *block)
 {
-    print_addr(block);
+    print_addr(block + 1);
     ft_putstr(" - ");
     print_addr(block + block->size);
     ft_putstr(" : ");
