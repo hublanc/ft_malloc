@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 16:50:16 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/17 17:02:55 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/22 17:01:59 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,5 +163,6 @@ void ft_free(void *ptr)
 
 void free(void *ptr)
 {
+	show_alloc_mem();
     ft_free(ptr);
 }

@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/04 13:57:56 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/14 10:42:36 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/22 15:55:35 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 # define SMALL_MAX_ALLOC_SIZE 129024
 # define SMALL_REGION_SIZE 4096
 # define SMALL_ALLOC_RESOLUTION 512
+# define NOT_ENOUGH_ROOM 1
+# define ENOUGH_ROOM 0
+# define ERROR_ROOM -1
 
 # define round_up(nb, padding) (((nb) + ((padding) - 1)) & ~((padding) - 1))
 
@@ -114,18 +117,31 @@ void	init_block_metadata_value(t_area *area);
 /*
 **	FREE
 **
-**	void malloc(void *ptr);
+**	void free(void *ptr);
 **
 **	Input:
 **			- ptr : pointer to free his allaction
 */
 t_area_to_free find_area_where_block_to_free(void *ptr);
 t_block_to_free find_block_to_free(void *ptr, t_area *area);
+void	defrag(t_block_to_free block_to_free);
 void 	ft_free(void *ptr);
 void	free(void *ptr);
 
+/*
+**	REALLOC
+**
+**	void *realloc(void *ptr, size_t size);
+**
+**	Input:
+**			- ptr : pointer to reallocate
+**			- size: new size of the pointer
+*/
 
-
+int		enough_room(void *ptr, size_t size, t_area_to_free *area_s,
+				t_block_to_free *block_s);
+void	*ft_realloc(void *ptr, size_t size);
+void	*realloc(void *ptr, size_t size);
 
 /*
 **	SHOW ALLOCATION MEMORY

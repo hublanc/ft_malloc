@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   malloc.c                                           :+:      :+:    :+:   */
+/*   ft_malloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/05 16:36:35 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/14 12:16:00 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/22 17:01:45 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ int check_size_free_block(size_t size, e_memory_type memory_type,t_block_metadat
 	size_t min_type;
 
 	is_valid = 0;
+	min_type = 0;
 	if (TINY == memory_type)
 		min_type = TINY_MIN_ALLOC_SIZE;
 	else if (SMALL == memory_type)
@@ -184,6 +185,7 @@ void set_block_value(e_memory_type memory_type, size_t size, t_block_metadata *b
 	block->size = size;
 	block->is_free = 0;
 	next = NULL;
+	pad = 0;
 	printf("TMP SIZE: %zu : BLOCK SIZE: %zu	\n", tmp, block->size);
 	if (TINY == memory_type)
 		pad = round_up(sizeof(t_block_metadata) + size, TINY_ALLOC_RESOLUTION);
@@ -274,61 +276,7 @@ void	*ft_malloc(size_t size){
 	return (memory_allocated);
 }
 
-#include <stdio.h>
-
 void *malloc(size_t size) {
+	show_alloc_mem();
 	return (ft_malloc(size));
 }
-/*
-
-#include <stdio.h>
-
-void basic_test()
-{
-	char *str = (char*)ft_malloc(sizeof(char) * 8);
-	char *str1 = (char*)ft_malloc(sizeof(char) * 120000);
-	char *str2 = (char*)ft_malloc(sizeof(char) * 210000);
-	if (!str)
-	{
-		puts("error ft malloc returned NULL");
-	}
-	else
-	{
-		puts("HURRAY ft malloc returned something");
-		strcpy(str, "salut\0");
-		printf("Str after strcpy: %s \n", str);
-		printf("%p\n",(void*)&str);
-	}
-	if (!str1)
-	{
-		puts("error ft malloc returned NULL");
-	}
-	else
-	{
-		puts("HURRAY ft malloc returned something");
-		strcpy(str1, "salut\0");
-		printf("Str after strcpy: %s \n", str1);
-		printf("%p\n",(void*)&str1);
-	}
-	if (!str2)
-	{
-		puts("error ft malloc returned NULL");
-	}
-	else
-	{
-		puts("HURRAY ft malloc returned something");
-		strcpy(str2, "salut\0");
-		printf("Str after strcpy: %s \n", str2);
-		printf("%p\n",(void*)&str2);
-	}
-}
-
-int main(int argc, const char *argv[])
-{
-	(void)argc;
-	(void)argv;
-	basic_test();
-
-	return 0;
-}
-*/
