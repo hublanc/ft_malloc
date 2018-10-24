@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 16:50:16 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/22 17:01:59 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/24 19:39:35 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ t_area_to_free find_area_where_block_to_free(void *ptr)
         seek_in_area(ptr, index, &area_to_free);
         ++index;
     }
-    printf("AREA TO FREE STATE: %p ; MEMORY TYPE: %d\n", area_to_free.area, index);
     if (index <= LARGE)
         area_to_free.memory_type = index;
     return (area_to_free);
@@ -68,7 +67,6 @@ t_block_to_free find_block_to_free(void *ptr, t_area *area)
     block_to_free.block = NULL;
     block = NULL;
     prev = NULL;
-    printf("1st cast: %p ; 2nd cast: %p ; no cast: %p ; pointer: %p\n", (void*)(block + 1), (t_block_metadata*)(block + 1), block + 1, ptr);
     if (area)
     {
         block = (t_block_metadata*)(area + 1);
@@ -84,8 +82,10 @@ t_block_to_free find_block_to_free(void *ptr, t_area *area)
 }
 
 void free_large(t_area_to_free area_to_free) {
+	g_allocator[area_to_free.memory_type].size_allocated -= area_to_free.area->size;
+	puts("salut");
     if (!area_to_free.prev)
-        area_to_free.area = area_to_free.area->next;
+        g_allocator[area_to_free.memory_type].area = area_to_free.area->next;
     else
         area_to_free.prev->next = area_to_free.area->next;
     munmap(area_to_free.area, area_to_free.area->size);
@@ -123,19 +123,17 @@ void free_small_tiny(t_block_to_free block_to_free, t_area_to_free area_to_free)
     pad = 0;
     if (block_to_free.block)
     {
+		g_allocator[area_to_free.memory_type].size_allocated -= block_to_free.block->size;
         if (block_to_free.block->size <= TINY_MAX_ALLOC_SIZE)
         {
-            //printf("ROUND UP TINY\n");
             pad = round_up(sizeof(t_block_metadata) + block_to_free.block->size, TINY_ALLOC_RESOLUTION);
         }
         else if (block_to_free.block->size <= SMALL_MAX_ALLOC_SIZE)
         {
-            //printf("ROUND UP SMALL\n");
             pad = round_up(sizeof(t_block_metadata) + block_to_free.block->size, SMALL_ALLOC_RESOLUTION);
         }
         block_to_free.block->is_free = 1;
         //block_to_free.block->size += (pad - block_to_free.block->size - sizeof(t_block_metadata));
-        printf("PAD: %zu : SIZE: %zu\n", pad, block_to_free.block->size);
         block_to_free.block->size = (pad - sizeof(t_block_metadata));
         //defrag(block_to_free);
         free_empty_area(block_to_free, area_to_free);
@@ -153,7 +151,9 @@ void ft_free(void *ptr)
         if (area_to_free.area
             && (LARGE == area_to_free.memory_type))
             free_large(area_to_free);
-        else
+        else if (area_to_free.area
+			&& (area_to_free.memory_type < LARGE
+			&& area_to_free.memory_type >= TINY))
         {
             block_to_free = find_block_to_free(ptr, area_to_free.area);
             free_small_tiny(block_to_free, area_to_free);
@@ -163,6 +163,7 @@ void ft_free(void *ptr)
 
 void free(void *ptr)
 {
-	show_alloc_mem();
+	pthread_mutex_lock(&g_mutex);
     ft_free(ptr);
+	pthread_mutex_unlock(&g_mutex);
 }

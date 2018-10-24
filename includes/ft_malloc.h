@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/04 13:57:56 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/22 15:55:35 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/24 18:24:53 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <unistd.h>
 # include <sys/mman.h>
 # include <sys/resource.h>
+# include <pthread.h>
 # include "../libft/includes/libft.h"
 
 #include <stdio.h>
@@ -164,6 +165,19 @@ void	*realloc(void *ptr, size_t size);
 */
 void show_alloc_mem();
 
+/*
+**	CALLOC
+**
+**	void *calloc(size_t count, size_t size);
+**
+**	Input:
+**			- count : number of objects
+**			- size: new size of one object
+*/
+void	*ft_calloc(size_t count, size_t size);
+void	*calloc(size_t count, size_t size);
+
 extern t_allocator g_allocator[3];
+extern pthread_mutex_t g_mutex;
 
 #endif

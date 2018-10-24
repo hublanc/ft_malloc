@@ -6,13 +6,14 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/05 16:36:35 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/22 17:01:45 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/24 18:27:17 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_malloc.h"
 
 t_allocator g_allocator[3] = {{0, NULL}, {0, NULL}, {0, NULL}};
+pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void	init_block_metadata_value(t_area *area)
 {
@@ -186,7 +187,6 @@ void set_block_value(e_memory_type memory_type, size_t size, t_block_metadata *b
 	block->is_free = 0;
 	next = NULL;
 	pad = 0;
-	printf("TMP SIZE: %zu : BLOCK SIZE: %zu	\n", tmp, block->size);
 	if (TINY == memory_type)
 		pad = round_up(sizeof(t_block_metadata) + size, TINY_ALLOC_RESOLUTION);
 	else if (SMALL == memory_type)
@@ -195,7 +195,6 @@ void set_block_value(e_memory_type memory_type, size_t size, t_block_metadata *b
 	{
 		if (!block->next)
 		{
-			printf("TRY TO MALLOC BEFORE NULL BLOCK\n");
 			block->next = (t_block_metadata*)((char*)block + pad);
 			block->next->size = tmp - pad;
 			block->next->is_free = 1;
@@ -203,19 +202,15 @@ void set_block_value(e_memory_type memory_type, size_t size, t_block_metadata *b
 		}
 		else
 		{
-			printf("TRY TO MALLOC BETWEEN ALLOCATED BLOCK\n");
 			next = block->next;
 			block->next = (t_block_metadata*)((char*)block + pad);
 			block->next->size = tmp - pad;
 			block->next->is_free = 1;
 			block->next->next = next;
-			if (block->next->next == block->next)
-				printf("NEXT DIDN$T WORK\n");
 		}
 	}
 	else
 	{
-		printf("TRY TO MALLOC AT THE END OF THE AREA\n");
 		block->next = NULL;
 	}
 }
@@ -257,9 +252,10 @@ void	*allocate_memory(e_memory_type memory_type, size_t size)
 void	*ft_malloc(size_t size){
 	void	*memory_allocated;
 
-	if (size <= 0)
+	if (size == 0)
 	{
-		memory_allocated = NULL;
+		size = TINY_MIN_ALLOC_SIZE;
+		memory_allocated = allocate_memory(TINY, size);
 	}
 	else if (size <= TINY_MAX_ALLOC_SIZE)
 	{
@@ -277,6 +273,10 @@ void	*ft_malloc(size_t size){
 }
 
 void *malloc(size_t size) {
-	show_alloc_mem();
-	return (ft_malloc(size));
+	void *new;
+
+	pthread_mutex_lock(&g_mutex);
+	new = ft_malloc(size);
+	pthread_mutex_unlock(&g_mutex);
+	return (new);
 }

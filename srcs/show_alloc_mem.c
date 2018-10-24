@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 11:49:15 by hublanc           #+#    #+#             */
-/*   Updated: 2018/09/24 11:49:20 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/24 18:29:23 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ void show_alloc_mem()
     t_area      *large_area;
     t_area_type current;
 
+	pthread_mutex_lock(&g_mutex);
     tiny_area = g_allocator[TINY].area;
     small_area = g_allocator[SMALL].area;
     large_area = g_allocator[LARGE].area;
@@ -132,4 +133,5 @@ void show_alloc_mem()
         print_area(current);
     }
     print_total();
+	pthread_mutex_unlock(&g_mutex);
 }

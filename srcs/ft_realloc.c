@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/18 17:45:13 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/22 17:02:06 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/24 20:13:23 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,22 @@ int enough_room(void *ptr, size_t size, t_area_to_free *area_s,
 		if (block_s->block)
 		{
 			if (block_s->block->size >= size)
+			{
 				return ENOUGH_ROOM;
+			}
 			else if ((size <= TINY_MAX_ALLOC_SIZE 
 					&& area_s->memory_type == TINY)
 					|| (size <= SMALL_MAX_ALLOC_SIZE 
 					&& area_s->memory_type == SMALL))
 			{
-				defrag(*block_s);
+				//defrag(*block_s);
 				return (block_s->block->size
 						>= size ? ENOUGH_ROOM : NOT_ENOUGH_ROOM);	
 			}
 			else
+			{
 				return (NOT_ENOUGH_ROOM);
+			}
 		}
 	}
 	return (ERROR_ROOM);	
@@ -55,7 +59,7 @@ void *ft_realloc(void *ptr, size_t size)
 	else if (NOT_ENOUGH_ROOM == ret)
 	{
 		new = ft_malloc(size);
-		ft_memcpy(new, ptr, size);
+		memcpy(new, ptr, block_s.block->size);
 		ft_free(ptr);
 	}
 	else if (NULL == ptr)
@@ -70,6 +74,10 @@ void *ft_realloc(void *ptr, size_t size)
 
 void *realloc(void *ptr, size_t size)
 {
-	show_alloc_mem();
-	return ft_realloc(ptr, size);
+	void *new;
+
+	pthread_mutex_lock(&g_mutex);
+	new = ft_realloc(ptr, size);
+	pthread_mutex_unlock(&g_mutex);
+	return (new);
 }
