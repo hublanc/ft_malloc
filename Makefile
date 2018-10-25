@@ -6,7 +6,7 @@
 #    By: hublanc <marvin@42.fr>                     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/07/24 15:04:09 by hublanc           #+#    #+#              #
-#    Updated: 2018/09/20 15:20:41 by hublanc          ###   ########.fr        #
+#    Updated: 2018/10/25 19:13:37 by hublanc          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,8 @@ HEADER  = includes/
 LIBSRC  = libft/
 SRCDIR  = srcs/
 OBJDIR	= objs/
-SRC		= ft_malloc.c ft_free.c
+SRC		= ft_malloc.c ft_free.c ft_realloc.c show_alloc_mem.c ft_calloc.c\
+		  finder.c limit.c block.c area.c
 SRCS	= $(addprefix $(SRCDIR), $(SRC))
 OBJS	= $(addprefix $(OBJDIR), $(SRC:.c=.o))
 
@@ -37,7 +38,7 @@ NC      =   \033[0m
 all: $(OBJDIR) $(NAME)
 
 $(NAME): $(LIB) $(OBJS)
-	$(CC) $(FLAGS) -L./$(LIBSRC) -shared -o $(NAME) $(OBJS)
+	$(CC) $(FLAGS) $(LIBSRC)/libft.a -shared -o $(NAME) $(OBJS)
 	#$(CC) $(FLAGS) -L./$(LIBSRC) -o Malloc $(OBJS)
 	@echo "\n${CYN}PROCESSING DONE !${NC}"
 
@@ -56,12 +57,10 @@ $(OBJDIR)%.o: $(SRCDIR)%.c $(HEADER)/ft_malloc.h
 clean:
 	@echo "${RED}Cleaning ${NC}./libft/objs/ ${RED}[${NC}...${RED}]${NC}"
 	@rm -rf $(OBJS)
-	@make -C $(LIBSRC) clean
 
 fclean: clean
 	@echo "${RED}Cleaning ${NC}./libft/${RED}libft.h${NC}\n"
 	@rm -rf $(NAME)
-	@make -C $(LIBSRC) fclean
 	@echo "${RED}DELETE DONE !${NC}"
 
 re: fclean all

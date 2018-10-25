@@ -6,13 +6,13 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/24 17:54:45 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/24 18:30:06 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/25 18:37:28 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_malloc.h"
 
-void *ft_calloc(size_t count, size_t size)
+void	*ft_calloc(size_t count, size_t size)
 {
 	void *new;
 
@@ -31,12 +31,12 @@ void *ft_calloc(size_t count, size_t size)
 	return (new);
 }
 
-void *calloc(size_t count, size_t size)
+void	*calloc(size_t count, size_t size)
 {
 	void *new;
 
-	pthread_mutex_lock(&g_mutex);
+	//pthread_mutex_lock(&g_mutex);
 	new = ft_calloc(count, size);
-	pthread_mutex_unlock(&g_mutex);
+	//pthread_mutex_unlock(&g_mutex);
 	return (new);
 }

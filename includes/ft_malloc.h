@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/04 13:57:56 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/24 18:24:53 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/25 19:21:57 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 
 typedef enum
 {
-	TINY,
+	TINY = 0,
 	SMALL,
 	LARGE
 }					e_memory_type;
@@ -89,6 +89,35 @@ typedef struct				s_area_type
 */
 
 /*
+** FINDER
+*/
+t_area_to_free		find_area_where_block_to_free(void *ptr);
+t_block_to_free		find_block_to_free(void *ptr, t_area *area);
+t_block_metadata	*find_free_block(size_t size, e_memory_type memory_type,
+					t_area *area);
+
+/*
+** LIMIT
+*/
+size_t				get_size_allocated();
+int					check_limit(size_t *mmap_size, e_memory_type memory_type);
+
+
+/*
+** BLOCK 
+*/
+t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size,
+										t_area **area);
+t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size,
+										t_area **area);
+void				defrag(t_block_to_free block_to_free);
+
+/*
+** AREA 
+*/
+t_area				*create_new_area(e_memory_type memory_type, size_t size);
+
+/*
 **	MALLOC
 **
 **	void* malloc(size_t size);
@@ -99,21 +128,8 @@ typedef struct				s_area_type
 **	Return:
 **			- return a pointer of the new memory area allocated
 */
-void*	malloc(size_t size);
-
-//SUB_FUNC
-void	*ft_malloc(size_t size);
-void	*allocate_memory(e_memory_type memory_type, size_t size);
-t_block_metadata	*carve_memory_block(e_memory_type memory_type, size_t size, t_area **area);
-t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area **area);
-t_area	*find_free_area(t_area *current);
-t_block_metadata *find_free_block(size_t size, e_memory_type memory_type, t_area *area);
-t_area	*create_new_area(e_memory_type memory_type, size_t size);
-void	init_area_value(size_t size, t_area *area);
-void	init_block_metadata_value(t_area *area);
-
-
-
+void				*malloc(size_t size);
+void				*ft_malloc(size_t size);
 
 /*
 **	FREE
@@ -123,11 +139,8 @@ void	init_block_metadata_value(t_area *area);
 **	Input:
 **			- ptr : pointer to free his allaction
 */
-t_area_to_free find_area_where_block_to_free(void *ptr);
-t_block_to_free find_block_to_free(void *ptr, t_area *area);
-void	defrag(t_block_to_free block_to_free);
-void 	ft_free(void *ptr);
-void	free(void *ptr);
+void				ft_free(void *ptr);
+void				free(void *ptr);
 
 /*
 **	REALLOC
@@ -139,10 +152,10 @@ void	free(void *ptr);
 **			- size: new size of the pointer
 */
 
-int		enough_room(void *ptr, size_t size, t_area_to_free *area_s,
-				t_block_to_free *block_s);
-void	*ft_realloc(void *ptr, size_t size);
-void	*realloc(void *ptr, size_t size);
+int					enough_room(void *ptr, size_t size, t_area_to_free *area_s,
+								t_block_to_free *block_s);
+void				*ft_realloc(void *ptr, size_t size);
+void				*realloc(void *ptr, size_t size);
 
 /*
 **	SHOW ALLOCATION MEMORY
@@ -163,7 +176,7 @@ void	*realloc(void *ptr, size_t size);
 **	0xB0020 - 0xBBEEF : 48847 octets
 **	Total : 52698 octets
 */
-void show_alloc_mem();
+void				show_alloc_mem();
 
 /*
 **	CALLOC
@@ -174,10 +187,10 @@ void show_alloc_mem();
 **			- count : number of objects
 **			- size: new size of one object
 */
-void	*ft_calloc(size_t count, size_t size);
-void	*calloc(size_t count, size_t size);
+void				*ft_calloc(size_t count, size_t size);
+void				*calloc(size_t count, size_t size);
 
-extern t_allocator g_allocator[3];
+extern t_allocator	g_allocator[3];
 extern pthread_mutex_t g_mutex;
 
 #endif
