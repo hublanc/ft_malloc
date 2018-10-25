@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 11:49:15 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 15:24:49 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/25 21:50:23 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ void print_area(t_area_type area_type)
     ft_putchar('\n');
     while (block)
     {
-        if (!block->is_free)
-            print_block(block);
+       // if (!block->is_free)
+        print_block(block);
         block = block->next;
     }
 }

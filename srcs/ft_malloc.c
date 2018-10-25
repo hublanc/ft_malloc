@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/05 16:36:35 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 19:20:42 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/25 21:00:21 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	*allocate_memory(e_memory_type memory_type, size_t size)
 void	*ft_malloc(size_t size){
 	void	*memory_allocated;
 
-	if (size == 0)
+	if (size  == 0)
 	{
 		size = TINY_MIN_ALLOC_SIZE;
 		memory_allocated = allocate_memory(TINY, size);

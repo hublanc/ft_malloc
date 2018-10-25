@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/18 17:45:13 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 18:30:14 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/25 20:40:55 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int		enough_room(void *ptr, size_t size, t_area_to_free *area_s,
 					|| (size <= SMALL_MAX_ALLOC_SIZE
 					&& area_s->memory_type == SMALL))
 			{
-				defrag(*block_s);
+				//defrag(*block_s);
 				return (block_s->block->size
 						>= size ? ENOUGH_ROOM : NOT_ENOUGH_ROOM);
 			}
@@ -53,7 +53,7 @@ void	*do_realloc(void *ptr, size_t size)
 	if (ENOUGH_ROOM == ret && block_s.block)
 	{
 		new = block_s.block;
-		block_s.block->size = size;
+		//block_s.block->size = size;
 	}
 	else if (NOT_ENOUGH_ROOM == ret)
 	{

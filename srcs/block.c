@@ -6,31 +6,47 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/25 19:07:32 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 19:17:29 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/25 22:17:25 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ft_malloc.h"
 
+#include <stdio.h>
 void defrag(t_block_to_free block_to_free)
 {
+	size_t				tmp;
+	t_block_metadata	*next;
+
+	tmp = 0;
+	next = NULL;
     if (block_to_free.prev && block_to_free.prev->is_free)
     {
-        block_to_free.block->size += block_to_free.prev->size;
+		//ft_putendl("AGGLO PREV");
+		tmp = block_to_free.prev->size +
+			block_to_free.block->size + sizeof(t_block_metadata);
+		next = block_to_free.block->next;
+        //block_to_free.block->size += block_to_free.prev->size;
         block_to_free.block = block_to_free.prev;
+		block_to_free.block->size = tmp;
+		block_to_free.block->next = next;
         block_to_free.prev = NULL;
     }
     if (block_to_free.block->next && block_to_free.block->next->is_free)
     {
-        block_to_free.block->size += block_to_free.block->next->size;
+		//ft_putendl("AGGLO NXT");
+        block_to_free.block->size += block_to_free.block->next->size
+									+ sizeof(t_block_metadata);
         block_to_free.block->next = block_to_free.block->next->next;
     }
 }
 
-static void set_block_value(e_memory_type memory_type, size_t size, t_block_metadata *block)
+static void set_block_value(e_memory_type memory_type, size_t size,
+							t_block_metadata *block)
 {
 	size_t	tmp;
 	size_t	pad;
+	size_t	min_size;
 	t_block_metadata *next;
 
 	tmp = block->size;
@@ -38,11 +54,18 @@ static void set_block_value(e_memory_type memory_type, size_t size, t_block_meta
 	block->is_free = 0;
 	next = NULL;
 	pad = 0;
+	min_size = 0;
 	if (TINY == memory_type)
+	{
 		pad = round_up(sizeof(t_block_metadata) + size, TINY_ALLOC_RESOLUTION);
+		min_size = TINY_MIN_ALLOC_SIZE;
+	}
 	else if (SMALL == memory_type)
+	{
 		pad = round_up(sizeof(t_block_metadata) + size, SMALL_ALLOC_RESOLUTION);
-	if (tmp > pad + sizeof(t_block_metadata))
+		min_size = TINY_MAX_ALLOC_SIZE + 1;
+	}
+	if (tmp > pad + sizeof(t_block_metadata) + min_size)
 	{
 		if (!block->next)
 		{
@@ -66,7 +89,8 @@ static void set_block_value(e_memory_type memory_type, size_t size, t_block_meta
 	}
 }
 
-t_block_metadata	*first_block_new_area(e_memory_type memory_type, size_t size, t_area **area)
+t_block_metadata	*first_block_new_area(e_memory_type memory_type,
+										size_t size, t_area **area)
 {
 	t_block_metadata	*block_metadata;
 	t_area 				*last;
