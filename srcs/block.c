@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/25 19:07:32 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/26 16:27:56 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 21:55:22 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,45 @@ static void set_block_value(e_memory_type memory_type, size_t size,
 		if (!block->next)
 		{
 			block->next = (t_block_metadata*)((char*)block + pad);
-			block->next->size = tmp - pad;
+			//block->next->size = tmp - pad;
+			block->next->size = tmp - (pad - sizeof(t_block_metadata))
+								- sizeof(t_block_metadata);
 			block->next->is_free = 1;
 			block->next->next = NULL;
+			ft_putstr("type: ");
+			ft_putnbr((int)memory_type);
+			ft_putstr(" pad: ");
+			ft_putnbr(pad);
+			ft_putstr(" new size: ");
+			ft_putnbr(size);
+			ft_putstr(" origin size: ");
+			ft_putnbr(tmp);
+			ft_putstr(" next size: ");
+			ft_putnbr(block->next->size);
+			ft_putstr(" struct size: ");
+			ft_putnbrel(sizeof(t_block_metadata));
 		}
 		else
 		{
 			next = block->next;
 			block->next = (t_block_metadata*)((char*)block + pad);
-			block->next->size = tmp - pad;
+			//block->next->size = tmp - pad;
+			block->next->size = tmp - (pad - sizeof(t_block_metadata))
+								- sizeof(t_block_metadata);
 			block->next->is_free = 1;
 			block->next->next = next;
+			ft_putstr("type: ");
+			ft_putnbr((int)memory_type);
+			ft_putstr(" pad: ");
+			ft_putnbr(pad);
+			ft_putstr(" new size: ");
+			ft_putnbr(size);
+			ft_putstr(" origin size: ");
+			ft_putnbr(tmp);
+			ft_putstr(" next size: ");
+			ft_putnbr(block->next->size);
+			ft_putstr(" struct size: ");
+			ft_putnbrel(sizeof(t_block_metadata));
 		}
 	}
 }

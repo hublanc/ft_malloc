@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/25 18:48:49 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 18:59:06 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 23:46:05 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,19 @@ static int check_size_free_block(size_t size, e_memory_type memory_type,
 		min_type = TINY_MIN_ALLOC_SIZE;
 	else if (SMALL == memory_type)
 		min_type = TINY_MAX_ALLOC_SIZE + 1;
-	if ((block->size >= size + sizeof(t_block_metadata) + min_type)
+	if ((block->size >= (size + sizeof(t_block_metadata) + min_type))
 		|| block->size == size)
+	{
+		ft_putstr("In finder block size: ");
+		ft_putnbr(block->size);
+		ft_putstr(" size: ");
+		ft_putnbr(size);
+		ft_putstr(" mem type : ");
+		ft_putnbr(sizeof(t_block_metadata));
+		ft_putstr(" min type : ");
+		ft_putnbrel(min_type);
 		is_valid = 1;
+	}
 	return (is_valid);
 }
 

@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 11:49:15 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/26 14:50:12 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 19:05:52 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,18 +30,22 @@ void print_addr(void *addr)
     const char      base_str[17] = "0123456789ABCDEF\0";
     char            buffer[100];
     uint64_t        nb;
-    int             index;
+    size_t			index;
     size_t          length;
 
-    index = 1;
+    //index = 1;
     nb = (uint64_t)addr;
     length = length_base(nb, 16);
+    index = length_base(nb, 16) - 1;
     ft_putstr("0x");
+	if (nb == 0)
+		buffer[0] = '0';
     while (nb > 0)
     {
-        buffer[length - index] = base_str[nb % 16];
+        //buffer[length - index] = base_str[nb % 16];
+        buffer[index] = base_str[nb % 16];
         nb /= 16;
-        index++;
+        index--;
     }
     buffer[length] = '\0';
     ft_putstr(buffer);
@@ -51,9 +55,10 @@ void print_block(t_block_metadata *block)
 {
     print_addr(block + 1);
     ft_putstr(" - ");
-    print_addr(block + block->size);
+    print_addr((char*)(block + 1) + block->size);
     ft_putstr(" : ");
-    ft_putnbr((block + block->size) - block);
+	ft_putnbr(block->size);
+    //ft_putnbr(((char*)block + block->size) - (char*)block);
     ft_putstr(" octets");
 	if (block->is_free)
 		ft_putstr(" [free]");
@@ -126,7 +131,7 @@ void show_alloc_mem()
     t_area      *large_area;
     t_area_type current;
 
-	pthread_mutex_lock(&g_mutex);
+	//pthread_mutex_lock(&g_mutex);
     tiny_area = g_allocator[TINY].area;
     small_area = g_allocator[SMALL].area;
     large_area = g_allocator[LARGE].area;
@@ -137,5 +142,5 @@ void show_alloc_mem()
         print_area(current);
     }
     print_total();
-	pthread_mutex_unlock(&g_mutex);
+	//pthread_mutex_unlock(&g_mutex);
 }

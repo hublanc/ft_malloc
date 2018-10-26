@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 16:50:16 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/26 16:27:33 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 22:49:56 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void free_small_tiny(t_block_to_free block_to_free, t_area_to_free area_to_free)
     size_t pad;
 
     pad = 0;
-    if (block_to_free.block)
+    if (block_to_free.block && !block_to_free.block->is_free)
     {
 		g_allocator[area_to_free.memory_type].size_allocated -= block_to_free.block->size;
         if (area_to_free.memory_type == TINY)
@@ -77,7 +77,9 @@ void ft_free(void *ptr)
 
 void free(void *ptr)
 {
-	pthread_mutex_lock(&g_mutex);
+	//pthread_mutex_lock(&g_mutex);
+	ft_putendl("== FREE CALL ==");
     ft_free(ptr);
-	pthread_mutex_unlock(&g_mutex);
+	show_alloc_mem();
+	//pthread_mutex_unlock(&g_mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/05 16:36:35 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/26 16:27:41 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 21:03:54 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,10 @@ void	*ft_malloc(size_t size){
 void *malloc(size_t size) {
 	void *new;
 
-	pthread_mutex_lock(&g_mutex);
+	//pthread_mutex_lock(&g_mutex);
+	ft_putendl("== MALLOC CALL ==");
 	new = ft_malloc(size);
-	pthread_mutex_unlock(&g_mutex);
+	show_alloc_mem();
+	//pthread_mutex_unlock(&g_mutex);
 	return (new);
 }

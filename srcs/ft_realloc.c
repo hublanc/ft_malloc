@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/18 17:45:13 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/26 16:28:30 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 21:33:59 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,10 @@ void	*realloc(void *ptr, size_t size)
 {
 	void *new;
 
-	pthread_mutex_lock(&g_mutex);
+	//pthread_mutex_lock(&g_mutex);
+	ft_putendl("== REALLOC CALL ==");
 	new = ft_realloc(ptr, size);
-	pthread_mutex_unlock(&g_mutex);
+	show_alloc_mem();
+	//pthread_mutex_unlock(&g_mutex);
 	return (new);
 }
