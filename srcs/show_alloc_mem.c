@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/24 11:49:15 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 21:50:23 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 14:50:12 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,11 @@ void print_block(t_block_metadata *block)
     print_addr(block + block->size);
     ft_putstr(" : ");
     ft_putnbr((block + block->size) - block);
-    ft_putstr(" octets\n");
+    ft_putstr(" octets");
+	if (block->is_free)
+		ft_putstr(" [free]");
+	ft_putendl("");
+    //ft_putstr(" octets\n");
 }
 
 void print_area(t_area_type area_type)
@@ -72,8 +76,8 @@ void print_area(t_area_type area_type)
     ft_putchar('\n');
     while (block)
     {
-       // if (!block->is_free)
-        print_block(block);
+		//if (!block->is_free)
+		print_block(block);
         block = block->next;
     }
 }

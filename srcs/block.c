@@ -6,7 +6,7 @@
 /*   By: hublanc <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/25 19:07:32 by hublanc           #+#    #+#             */
-/*   Updated: 2018/10/25 22:17:25 by hublanc          ###   ########.fr       */
+/*   Updated: 2018/10/26 16:27:56 by hublanc          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void defrag(t_block_to_free block_to_free)
 	next = NULL;
     if (block_to_free.prev && block_to_free.prev->is_free)
     {
-		//ft_putendl("AGGLO PREV");
 		tmp = block_to_free.prev->size +
 			block_to_free.block->size + sizeof(t_block_metadata);
 		next = block_to_free.block->next;
@@ -34,7 +33,6 @@ void defrag(t_block_to_free block_to_free)
     }
     if (block_to_free.block->next && block_to_free.block->next->is_free)
     {
-		//ft_putendl("AGGLO NXT");
         block_to_free.block->size += block_to_free.block->next->size
 									+ sizeof(t_block_metadata);
         block_to_free.block->next = block_to_free.block->next->next;
@@ -65,7 +63,7 @@ static void set_block_value(e_memory_type memory_type, size_t size,
 		pad = round_up(sizeof(t_block_metadata) + size, SMALL_ALLOC_RESOLUTION);
 		min_size = TINY_MAX_ALLOC_SIZE + 1;
 	}
-	if (tmp > pad + sizeof(t_block_metadata) + min_size)
+	if (tmp > pad + min_size)
 	{
 		if (!block->next)
 		{
@@ -82,10 +80,6 @@ static void set_block_value(e_memory_type memory_type, size_t size,
 			block->next->is_free = 1;
 			block->next->next = next;
 		}
-	}
-	else
-	{
-		block->next = NULL;
 	}
 }
 
